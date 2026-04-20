@@ -74,7 +74,7 @@ module bsg_mesh_router_decoder_dor
 
   // multicast
   wire copy_x = x_eq & mc_x;  // in same row as destination and x multicast is set
-  wire copy_y = y_eq & mc_y;  // in same column as destinaiton and y multicast is set
+  wire copy_y = y_eq & mc_y;  // in same column as destination and y multicast is set
   wire copy = copy_x | copy_y;  // send packet to processor and forward to next node
 
   // valid signal

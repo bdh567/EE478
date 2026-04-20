@@ -54,6 +54,16 @@ module decoder_tb ();
         #10 x_dirs_i = 10; y_dirs_i = 10; mc_x = 1; mc_y = 1;
         #1 $display("Multicast: req_o=%b (Expected: 10101)", req_o);
 
+        // No multicasting in X direction, only Y direction (X-then-Y routing)
+        #10 x_dirs_i = 10; y_dirs_i = 10; mc_x = 0; mc_y = 1;
+        #1 $display("Multicast: req_o=%b (Expected: 10100)", req_o);
+
+        // changing my location to 10,0 and keeping the same multicast request (X-then-Y routing)
+        #10 my_x_i = 10; my_y_i = 0;
+        // traverse downwards in Y direction, sending data to 10,1
+        #10 x_dirs_i = 10; y_dirs_i = 10; mc_x = 0; mc_y = 1;
+        #1 $display("Multicast: req_o=%b (Expected: 10101)", req_o);
+
         #10 $stop;
     end
 
