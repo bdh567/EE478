@@ -35,5 +35,16 @@ module bsg_mesh_router_decoder_dor_mc_cov
         coverpoint reset_i;
     endgroup
 
-    // 
+    // P-port delivery
+    covergroup cg_p_delivery @(negedge clk_i iff ~reset_i);
+        cv_x_eq: coverpoint x_eq;
+        cv_y_eq: coverpoint y_eq;
+        cv_mc_x: coverpoint mc_x;
+        cv_mc_y: coverpoint mc_y;
+        cv_req_p: coverpoint req_o[P];
+
+        cross_all: cross cv_x_eq, cv_y_eq, cv_mc_x, cv_mc_y, cv_req_p {
+            illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_x_eq == 0 && cv_y_eq == 0 && mc_x == 0 && mc_y == 0);
+        }
+    endgroup
 endmodule
