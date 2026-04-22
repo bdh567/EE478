@@ -47,4 +47,46 @@ module bsg_mesh_router_decoder_dor_mc_cov
             illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_x_eq == 0 && cv_y_eq == 0 && mc_x == 0 && mc_y == 0);
         }
     endgroup
+
+    // multicast in x direction
+    covergroup cg_mc_x @(negedge clk_i iff ~reset_i);
+        cv_x_eq: coverpoint x_eq;
+        cv_mc_x: coverpoint mc_x;
+        cv_req_p: coverpoint req_o[P];
+
+        cross_all: cross cv_x_eq, cv_mc_x, cv_req_p {
+            illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_x_eq == 0 && mc_x == 0);
+        }
+    endgroup
+
+    // multicast in y direction
+    covergroup cg_mc_y @(negedge clk_i iff ~reset_i);
+        cv_y_eq: coverpoint y_eq;
+        cv_mc_y: coverpoint mc_y;
+        cv_req_p: coverpoint req_o[P];
+
+        cross_all: cross cv_y_eq, cv_mc_y, cv_req_p {
+            illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_y_eq == 0 && mc_y == 0);
+        }
+    endgroup
+
+    // create multicast covergroups
+    cg_reset cov_reset = new;
+    cg_p_delivery cov_p_delivery = new;
+    cg_mc_x cov_mc_x = new;
+    cg_mc_y cov_mc_y = new;
+
+    // print coverages when simulation is done
+    final
+    begin
+        $display("");
+        $display("Instance: %m");
+        $display("---------------------- Functional Coverage Results ----------------------");
+        $display("Reset                    functional coverage is %f%%", cov_reset.get_coverage());
+        $display("P delivery               functional coverage is %f%%", cov_empty.cross_all.get_coverage());
+        $display("Multicast in x direction functional coverage is %f%%", cov_full.cross_all.get_coverage());
+        $display("Multicast in y direction functional coverage is %f%%", cov_normal.cross_all.get_coverage());
+        $display("-------------------------------------------------------------------------");
+        $display("");
+    end
 endmodule
