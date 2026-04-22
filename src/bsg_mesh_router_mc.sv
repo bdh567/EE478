@@ -19,6 +19,7 @@
  *
  *   For 2D mesh network, you can feed in in_dirs_lp > out_dirs_lp, and they will act as extra P ports. You also need to feed in an appropriate routing_matrix_p.
  *   
+ *   NOTE: This version contains a work-in-progress multicast feature.
  */  
 
 `include "bsg_defines.sv"
