@@ -64,6 +64,7 @@ module decoder_tb ();
         #10 x_dirs_i = 10; y_dirs_i = 10; mc_x = 0; mc_y = 1;
         #1 $display("Multicast: req_o=%b (Expected: 10101)", req_o);
 
+
         #10 $stop;
     end
 
