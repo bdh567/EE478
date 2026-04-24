@@ -24,141 +24,6 @@ CTRL_OUTPUT_SEED = 2
 # Testbench clock period
 CLK_PERIOD = 10
 
-
-# async def input_side_testbench(dut, seed):
-#     """Handle input traffic"""
-
-#     # Create local random generator for data generation
-#     data_random = random.Random()
-#     data_random.seed(seed)
-
-#     # Create control random generator for flow control
-#     control_random = random.Random()
-#     control_random.seed(CTRL_INPUT_SEED)
-
-#     # Initialize DUT interface values
-#     dut.v_i.value = 0
-#     dut.data_i.value = 0
-
-#     # Wait for reset deassertion
-#     while 1:
-#         await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#         if dut.reset_i == 0: break
-
-#     # Main iterations
-#     i = 0
-#     while 1:
-#         await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#         # Half chance to send data flit
-#         if control_random.random() >= 0.5:
-#             # Assert DUT valid signal
-#             dut.v_i.setimmediatevalue(1)
-#             # Check DUT ready signal
-#             if dut.ready_param_o == 1:
-#                 # Generate send data
-#                 dut.data_i.setimmediatevalue(math.floor(data_random.random()*pow(2, WIDTH_P)))
-#                 # iteration increment
-#                 i += 1
-#                 # Check iteration
-#                 if i == ITERATION:
-#                     # Test finished
-#                     break
-#         else:
-#             # Deassert DUT valid signal
-#             dut.v_i.setimmediatevalue(0)
-
-#     await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#     # Deassert DUT valid signal
-#     dut.v_i.value = 0
-
-
-# async def output_side_testbench(dut, seed):
-#     """Handle input traffic"""
-
-#     # Create local random generator for data generation
-#     data_random = random.Random()
-#     data_random.seed(seed)
-
-#     # Create control random generator for flow control
-#     control_random = random.Random()
-#     control_random.seed(CTRL_OUTPUT_SEED)
-
-#     # Initialize DUT interface values
-#     dut.yumi_i.value = 0
-
-#     # Wait for reset deassertion
-#     while 1:
-#         await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#         if dut.reset_i == 0: break
-
-#     # Main iterations
-#     i = 0
-#     while 1:
-#         await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#         if dut.v_o.value == 1 and control_random.random() >= 0.5:
-#             # Assert DUT yumi signal
-#             dut.yumi_i.setimmediatevalue(1)
-#             # Generate check data and compare with receive data
-#             assert dut.data_o.value == math.floor(data_random.random()*pow(2, WIDTH_P)), "data mismatch!"
-#             # iteration increment
-#             i += 1
-#             # Check iteration
-#             if i == ITERATION:
-#                 # Test finished
-#                 break
-#         else:
-#             # Deassert DUT yumi signal
-#             dut.yumi_i.setimmediatevalue(0)
-
-#     await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-#     # Deassert DUT yumi signal
-#     dut.yumi_i.value = 0
-
-
-# @cocotb.test()
-# async def testbench(dut):
-#     """Try accessing the design."""
-
-#     # Random seed assignment
-#     seed = time.time()
-
-#     # Create a 10ps period clock on DUT port clk_i
-#     clock = Clock(dut.clk_i, CLK_PERIOD, units="ps")
-
-#     # Start the clock. Start it low to avoid issues on the first RisingEdge
-#     clock_thread = cocotb.start_soon(clock.start(start_high=False))
-
-#     # Launch input and output testbench threads
-#     input_thread = cocotb.start_soon(input_side_testbench(dut, seed))
-#     output_thread = cocotb.start_soon(output_side_testbench(dut, seed))
-
-#     # Reset initialization
-#     dut.reset_i.value = 1
-
-#     # Wait for 5 clock cycles
-#     await Timer(CLK_PERIOD*5, units="ps")
-#     await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-
-#     # Deassert reset
-#     dut.reset_i.value = 0
-
-#     # Wait for threads to finish
-#     await input_thread
-#     await output_thread
-
-#     # Wait for 5 clock cycles
-#     await Timer(CLK_PERIOD*5, units="ps")
-#     await RisingEdge(dut.clk_i); await Timer(1, units="ps")
-
-#     # Assert reset
-#     dut.reset_i.value = 1
-
-#     # Wait for 5 clock cycles
-#     await Timer(CLK_PERIOD*5, units="ps")
-
-#     # Test finished!
-#     dut._log.info("Test finished! Current reset_i value = %s", dut.reset_i.value)
-
 @cocotb.test()
 async def testbench(dut):
 
@@ -175,25 +40,57 @@ async def testbench(dut):
     rand = random.Random()
     rand.seed(time.time())
 
-    for _ in range(ITERATION):
+    for i in range(ITERATION):
 
         await RisingEdge(dut.clk_i)
 
         # Randomize inputs
-        dut.my_x_i.value = rand.randint(0, 2**X_CORD_WIDTH_P - 1)
-        dut.my_y_i.value = rand.randint(0, 2**Y_CORD_WIDTH_P - 1)
+        my_x = rand.randint(0, 2**X_CORD_WIDTH_P - 1)
+        my_y = rand.randint(0, 2**Y_CORD_WIDTH_P - 1)
+        x_dirs = rand.randint(0, 2**X_CORD_WIDTH_P - 1)
+        y_dirs = rand.randint(0, 2**Y_CORD_WIDTH_P - 1)
+        mc_x = rand.randint(0, 1)
+        mc_y = rand.randint(0, 1)
 
-        dut.x_dirs_i.value = rand.randint(0, 2**X_CORD_WIDTH_P - 1)
-        dut.y_dirs_i.value = rand.randint(0, 2**Y_CORD_WIDTH_P - 1)
+        dut.my_x_i.value = my_x
+        dut.my_y_i.value = my_y
+        dut.x_dirs_i.value = x_dirs
+        dut.y_dirs_i.value = y_dirs
+        dut.mc_x.value = mc_x
+        dut.mc_y.value = mc_y
 
-        dut.mc_x.value = rand.randint(0, 1)
-        dut.mc_y.value = rand.randint(0, 1)
 
         await Timer(1, units="ps")
 
-        # Optional sanity check
         req = dut.req_o.value.integer
-        assert bin(req).count("1") <= 1, f"Invalid req_o: {req}"
-        dut._log.info(f"req_o = {dut.req_o.value.binstr}")
+        req_p = (req >> 0) & 1  # bit 0
+        req_w = (req >> 1) & 1  # bit 1
+        req_e = (req >> 2) & 1  # bit 2
+        req_n = (req >> 3) & 1  # bit 3
+        req_s = (req >> 4) & 1  # bit 4
+
+        x_eq = (x_dirs == my_x)
+        y_eq = (y_dirs == my_y)
+
+        # if mc_x=1 and forwarding in X, P must be set
+        if mc_x and not x_eq:
+            assert req_p == 1, \
+                f"[{i}] mc_x=1, x not eq, but P not set! " \
+                f"my=({my_x},{my_y}) dst=({x_dirs},{y_dirs}) req={bin(req)}"
+
+        # if mc_y=1 and forwarding in Y, P must be set
+        if mc_y and not y_eq and x_eq:
+            assert req_p == 1, \
+                f"[{i}] mc_y=1, y not eq, but P not set! " \
+                f"my=({my_x},{my_y}) dst=({x_dirs},{y_dirs}) req={bin(req)}"
+        req_bin = dut.req_o.value.binstr  # [S,N,E,W,P] MSB to LSB
+
+        dut._log.info(
+            f"[{i:3d}] "
+            f"my=({my_x},{my_y}) dst=({x_dirs},{y_dirs}) "
+            f"mc_x={mc_x} mc_y={mc_y} | "
+            f"req_o={req_bin} (S={req_bin[0]} N={req_bin[1]} E={req_bin[2]} W={req_bin[3]} P={req_bin[4]})"
+        )
+        
 
     dut._log.info("Test finished!")
