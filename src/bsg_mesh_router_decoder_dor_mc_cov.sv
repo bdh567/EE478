@@ -26,8 +26,11 @@ module bsg_mesh_router_decoder_dor_mc_cov
     
         , input [x_cord_width_p-1:0] my_x_i
         , input [y_cord_width_p-1:0] my_y_i
-    
-        , output [dirs_lp-1:0] req_o
+
+        // internal registers
+        , input x_eq
+        , input y_eq
+        , input [dirs_lp-1:0] req;
     );
 
     // reset
@@ -41,8 +44,7 @@ module bsg_mesh_router_decoder_dor_mc_cov
         cv_y_eq: coverpoint y_eq;
         cv_mc_x: coverpoint mc_x;
         cv_mc_y: coverpoint mc_y;
-        cv_req_p: coverpoint req_o[P];
-
+        cv_req_p: coverpoint req[P];
         cross_all: cross cv_x_eq, cv_y_eq, cv_mc_x, cv_mc_y, cv_req_p {
             illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_x_eq == 0 && cv_y_eq == 0 && mc_x == 0 && mc_y == 0);
         }
@@ -52,7 +54,7 @@ module bsg_mesh_router_decoder_dor_mc_cov
     covergroup cg_mc_x @(negedge clk_i iff ~reset_i);
         cv_x_eq: coverpoint x_eq;
         cv_mc_x: coverpoint mc_x;
-        cv_req_p: coverpoint req_o[P];
+        cv_req_p: coverpoint req[P];
 
         cross_all: cross cv_x_eq, cv_mc_x, cv_req_p {
             illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_x_eq == 0 && mc_x == 0);
@@ -63,7 +65,7 @@ module bsg_mesh_router_decoder_dor_mc_cov
     covergroup cg_mc_y @(negedge clk_i iff ~reset_i);
         cv_y_eq: coverpoint y_eq;
         cv_mc_y: coverpoint mc_y;
-        cv_req_p: coverpoint req_o[P];
+        cv_req_p: coverpoint req[P];
 
         cross_all: cross cv_y_eq, cv_mc_y, cv_req_p {
             illegal_bins ig0 = cross_all with (cv_req_p == 1 && cv_y_eq == 0 && mc_y == 0);
