@@ -1,0 +1,24 @@
+# List of all Verilog source files to include in this build.
+# Used by both synthesis and RTL simulation.
+synthesis.inputs.input_files: [
+
+  # TODO: Add any additional BSG files needed
+  "${bsg_root}/bsg_misc/bsg_scan.sv",
+  "${bsg_root}/bsg_noc/bsg_noc_pkg.sv",
+  "${bsg_root}/bsg_noc/bsg_mesh_router_pkg.sv",
+  "${bsg_root}/bsg_noc/bsg_mesh_router_decoder_dor.sv",
+  "${bsg_root}/bsg_noc/bsg_mesh_router.sv",
+  "${bsg_root}/bsg_misc/bsg_transpose.sv",
+  "${bsg_root}/bsg_misc/bsg_array_concentrate_static.sv",
+  "${bsg_root}/bsg_misc/bsg_mux_one_hot.sv",
+  "${bsg_root}/bsg_misc/bsg_concentrate_static.sv",
+  "${bsg_root}/bsg_misc/bsg_arb_round_robin.sv",
+  "${bsg_root}/bsg_misc/bsg_unconcentrate_static.sv"
+
+]
+synthesis.inputs.input_files_meta: [append, subst]
+
+# Add synthesis input files to simulation inputs
+# (Only for RTL sim)
+sim.inputs.input_files: synthesis.inputs.input_files
+sim.inputs.input_files_meta: [crossref, subst]
