@@ -6,7 +6,7 @@ module bsg_mesh_router_decoder_dor_mc_wrapper #(parameter x_cord_width_p = 4
                                                 , parameter ruche_factor_Y_p=0
                                                 , parameter XY_order_p = 1
                                                 , parameter depopulated_p = 1
-                                                , parameter from_p = {dirs_lp{1'b0}}  // one-hot, indicates which direction is the input coming from.
+                                                , parameter from_p = 5'b00001  // one-hot, indicates which direction is the input coming from.
                                                 , parameter debug_p = 1
                                                 ) 
     (
